@@ -7,10 +7,12 @@ const { writeLog } = require('../blockchain/auditContract');
 
 const router = express.Router();
 
+
+
 router.get('/:filename', async (req, res) => {
   const encryptedFilename = req.params.filename;
 
-  // 🔍 ดึง key/iv จาก MongoDB
+  //  ดึง key/iv จาก MongoDB
   const fileData = await FileMetadata.findOne({ filename: encryptedFilename });
   if (!fileData) return res.status(404).json({ error: 'File metadata not found' });
 
@@ -35,7 +37,7 @@ router.get('/:filename', async (req, res) => {
     const output = input.pipe(decipher);
     output.pipe(res);
 
-    // ✅ รอให้ส่งไฟล์จบก่อนค่อยเขียน log
+   
     res.on('finish', async () => {
       try {
         await writeLog(encryptedFilename, "DOWNLOAD");

@@ -55,7 +55,7 @@ router.post('/', upload.single('file'), async (req, res) => {
       await writeLog(encryptedFileName, "UPLOAD");
 
       res.json({
-        message: '✅ File encrypted, saved and logged successfully!',
+        message: '✅ File encrypted successfully!',
         filename: encryptedFileName
       });
     });

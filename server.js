@@ -14,11 +14,14 @@ mongoose.connect(process.env.MONGO_URI)
 // โหลด Routes
 const uploadRoute = require('./routes/upload');
 const downloadRoute = require('./routes/download');
+const filesRoute = require('./routes/files');
 const logsRoute = require('./routes/logs');
+const authRoute = require('./routes/auth');
+app.use('/api/auth', authRoute);  // ✅ สำหรับ register/login
 app.use('/api/upload', uploadRoute);
 app.use('/api/download', downloadRoute);
 app.use('/api/logs', logsRoute);
-
+app.use('/api/files', filesRoute);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
