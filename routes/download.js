@@ -1,55 +1,36 @@
+// download.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const FileMetadata = require('../models/FileMetadata');
 const { writeLog } = require('../blockchain/auditContract');
 
 const router = express.Router();
 
-
-
 router.get('/:filename', async (req, res) => {
   const encryptedFilename = req.params.filename;
-
-  //  ดึง key/iv จาก MongoDB
-  const fileData = await FileMetadata.findOne({ filename: encryptedFilename });
-  if (!fileData) return res.status(404).json({ error: 'File metadata not found' });
-
-  const encryptedPath = path.join(__dirname, '../uploads', encryptedFilename);
-  const decryptedFileName = fileData.originalName;
-
   try {
+    const meta = await FileMetadata.findOne({ filename: encryptedFilename });
+    if (!meta) return res.status(404).json({ error: 'File metadata not found' });
+
+    const encryptedPath = path.join(__dirname, '../uploads', encryptedFilename);
     if (!fs.existsSync(encryptedPath)) {
       return res.status(404).json({ error: 'Encrypted file not found' });
     }
 
-    const decipher = crypto.createDecipheriv(
-      'aes-256-cbc',
-      Buffer.from(fileData.key, 'hex'),
-      Buffer.from(fileData.iv, 'hex')
-    );
-
-    res.setHeader('Content-Disposition', `attachment; filename="${decryptedFileName}"`);
+    // ส่ง ciphertext กลับ (ให้ client ถอดเอง)
     res.setHeader('Content-Type', 'application/octet-stream');
+    // ชื่อไฟล์ฝั่ง client จะถอดรหัสแล้วใช้ชื่อจริง แต่ถ้าอยากเก็บไว้ก็โหลดเป็น .enc ได้
+    res.setHeader('Content-Disposition', `attachment; filename="${meta.originalName}.enc"`);
 
-    const input = fs.createReadStream(encryptedPath);
-    const output = input.pipe(decipher);
-    output.pipe(res);
+    fs.createReadStream(encryptedPath).pipe(res);
 
-   
     res.on('finish', async () => {
-      try {
-        await writeLog(encryptedFilename, "DOWNLOAD");
-        console.log(`✅ Logged download: ${encryptedFilename}`);
-      } catch (logErr) {
-        console.error("❌ Failed to log download:", logErr);
-      }
+      try { await writeLog(encryptedFilename, 'DOWNLOAD'); } catch (_) {}
     });
-
   } catch (err) {
-    console.error('❌ Decryption failed:', err);
-    res.status(500).json({ error: 'Failed to decrypt and download file' });
+    console.error('❌ Download Error:', err);
+    res.status(500).json({ error: 'Failed to fetch encrypted file' });
   }
 });
 

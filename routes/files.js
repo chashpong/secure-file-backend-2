@@ -1,20 +1,22 @@
+// files.js
 const express = require('express');
 const router = express.Router();
 const FileMetadata = require('../models/FileMetadata');
 
-// ✅ GET /api/files - ดึงรายชื่อไฟล์ทั้งหมด
-router.get('/', async (req, res) => {
+// GET /api/files
+router.get('/', async (_req, res) => {
   try {
     const files = await FileMetadata.find().sort({ uploadedAt: -1 });
-
-    const formatted = files.map(f => ({
-      id: f.filename, // ใช้ filename เป็น ID สำหรับดาวน์โหลด
-      filename: f.originalName,
-      folder: '-', // หากยังไม่มีระบบโฟลเดอร์ ให้แสดงเป็น "-"
-      uploadedAt: f.uploadedAt.toLocaleDateString('th-TH')
-    }));
-
-    res.json(formatted);
+    res.json(
+      files.map(f => ({
+        id: f.filename,               // ใช้เป็น params เวลาโหลด ciphertext
+        filename: f.originalName,     // ชื่อจริง (ไว้ตั้งชื่อหลังถอดรหัส)
+        folder: '-',                  // ยังไม่ทำระบบโฟลเดอร์
+        uploadedAt: f.uploadedAt,
+        iv: f.iv,                     // 👉 จำเป็นสำหรับ AES-GCM
+        mime: f.mime || 'application/octet-stream'
+      }))
+    );
   } catch (err) {
     console.error('❌ Failed to fetch files:', err);
     res.status(500).json({ error: 'Failed to get files' });

@@ -1,0 +1,69 @@
+toyota
+
+Absence of Anti-CSRF Tokens
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การขาดการป้องกัน Cross-Site Request Forgery (CSRF) เป็นการกำหนดค่าที่ไม่ปลอดภัยที่เสี่ยงต่อการโจมตี
+
+Content Security Policy (CSP) Header Not Set
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+CSP ใช้เพื่อป้องกันการโจมตีประเภท Cross-Site Scripting (XSS) การที่ไม่ตั้งค่านโยบายนี้ถือเป็นการกำหนดค่าที่ไม่ปลอดภัย
+
+Missing Anti-clickjacking Header
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การขาดส่วนหัวป้องกัน clickjacking เป็นการกำหนดค่าที่ไม่ปลอดภัยที่ทำให้เว็บไซต์เสี่ยงต่อการโจมตี
+
+Cookie No HttpOnly Flag
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การไม่มี HttpOnly flag ในคุกกี้ทำให้คุกกี้สามารถถูกเข้าถึงได้ผ่าน JavaScript และอาจนำไปสู่การขโมยข้อมูล
+
+Cookie Without Secure Flag
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+คุกกี้ที่ไม่มี Secure flag จะถูกส่งผ่านการเชื่อมต่อที่ไม่ปลอดภัย (HTTP) ซึ่งอาจถูกดักจับได้
+
+Cookie with SameSite Attribute None
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การตั้งค่า SameSite None อาจทำให้คุกกี้ถูกส่งในบริบทที่ไม่ปลอดภัย เช่น การโจมตี CSRF
+
+Cookie without SameSite Attribute
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+คุกกี้ที่ไม่มี SameSite Attribute อาจถูกใช้ในสถานการณ์ Cross-Site ที่เสี่ยงต่อการโจมตี CSRF
+
+Cross-Domain JavaScript Source File Inclusion
+ตรงกับ OWASP Top 10: A08 - Software and Data Integrity Failures
+การรวมไฟล์ JavaScript ข้ามโดเมนอาจทำให้เกิดปัญหาด้านความปลอดภัยหากไฟล์นั้นไม่ถูกเชื่อถือ
+
+Server Leaks Version Information via "Server" HTTP Response Header Field
+ตรงกับ OWASP Top 10: A06 - Vulnerable and Outdated Components
+การรั่วไหลของข้อมูลเวอร์ชันเซิร์ฟเวอร์สามารถนำไปสู่การโจมตีที่เจาะจงไปยังช่องโหว่ในเวอร์ชันนั้น ๆ
+
+Strict-Transport-Security Header Not Set
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การไม่ตั้งค่า HSTS ทำให้เว็บไซต์เสี่ยงต่อการโจมตีประเภท man-in-the-middle
+
+Timestamp Disclosure-Unix
+ตรงกับ OWASP Top 10: A01 - Broken Access Control (ในบางกรณีที่เกี่ยวข้องกับการควบคุมการเข้าถึง)
+
+X-Content-Type-Options Header Missing
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การขาดส่วนหัวนี้ทำให้เบราว์เซอร์อาจแสดงเนื้อหาในรูปแบบที่ไม่ปลอดภัย
+
+Information Disclosure-Suspicious Comment
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+ข้อความในโค้ดที่อาจเผยข้อมูลที่สำคัญหรือความลับถือเป็นการกำหนดค่าที่ไม่ปลอดภัย
+
+Modern Web Application
+ไม่ตรงกับ OWASP Top 10 โดยตรง แต่อาจครอบคลุมหลายหมวดหมู่ เช่น การใช้โมดูลหรือเฟรมเวิร์กที่ไม่ได้รับการอัปเดต
+
+Re-examine Cache-control Directives
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+การตั้งค่า Cache-Control ที่ไม่เหมาะสมอาจทำให้เกิดปัญหาด้านความปลอดภัย เช่น ข้อมูลที่เก็บไว้ในแคชของเบราว์เซอร์
+
+Retrieved from Cache
+ตรงกับ OWASP Top 10: A05 - Security Misconfiguration
+ข้อมูลที่ถูกเรียกจากแคชสามารถเป็นช่องโหว่ได้ หากแคชนั้นไม่ได้รับการควบคุมอย่างเหมาะสม
+
+Session Management Response Identified
+ตรงกับ OWASP Top 10: A02 - Cryptographic Failures หรือ A07 - Identification and Authentication Failures
+การจัดการเซสชันที่ไม่ปลอดภัยอาจทำให้เซสชันถูกโจมตีได้ เช่น การขโมยเซสชัน
+
+หลายรายการในภาพนี้สอดคล้องกับ OWASP Top 10: A05 - Security Misconfiguration เนื่องจากช่องโหว่จำนวนมากเกิดจากการกำหนดค่าที่ไม่ปลอดภัย
