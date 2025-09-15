@@ -5,17 +5,14 @@ contract AuditLog {
     struct Log {
         address user;
         string filename;
-        string action; // "UPLOAD" or "DOWNLOAD"
+        string action;
         uint timestamp;
     }
 
-    Log[] public logs;
-
-    event LogCreated(address indexed user, string filename, string action, uint timestamp);
+    Log[] private logs;
 
     function addLog(string memory filename, string memory action) public {
         logs.push(Log(msg.sender, filename, action, block.timestamp));
-        emit LogCreated(msg.sender, filename, action, block.timestamp);
     }
 
     function getLogsCount() public view returns (uint) {
@@ -23,8 +20,13 @@ contract AuditLog {
     }
 
     function getLog(uint index) public view returns (address, string memory, string memory, uint) {
-        require(index < logs.length, "Index out of bounds");
-        Log memory log = logs[index];
-        return (log.user, log.filename, log.action, log.timestamp);
+        require(index < logs.length, "Invalid index");
+        Log memory l = logs[index];
+        return (l.user, l.filename, l.action, l.timestamp);
+    }
+
+    // ✅ ดึงทั้งหมดครั้งเดียว
+    function getAllLogs() public view returns (Log[] memory) {
+        return logs;
     }
 }

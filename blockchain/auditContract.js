@@ -5,10 +5,10 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const ABI = [
   "function addLog(string memory filename, string memory action) public",
   "function getLogsCount() public view returns (uint)",
-  "function getLog(uint) public view returns (address, string memory, string memory, uint)"
+  "function getLog(uint) public view returns (address, string memory, string memory, uint)",
+  "function getAllLogs() public view returns (tuple(address user, string filename, string action, uint timestamp)[])" // ✅
 ];
 
-// ✅ ใช้ Infura + Sepolia
 const provider = new ethers.JsonRpcProvider(
   `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`
 );
@@ -27,22 +27,15 @@ async function writeLog(filename, action) {
   }
 }
 
-// ✅ อ่าน log
+// ✅ อ่าน log ครั้งเดียว
 async function getLogs() {
-  const count = await contract.getLogsCount();
-  const logs = [];
-
-  for (let i = 0; i < count; i++) {
-    const log = await contract.getLog(i);
-    logs.push({
-      user: log[0],
-      filename: log[1],
-      action: log[2],
-      timestamp: new Date(Number(log[3]) * 1000).toLocaleString()
-    });
-  }
-
-  return logs;
+  const logs = await contract.getAllLogs();
+  return logs.map(l => ({
+    user: l.user,
+    filename: l.filename,
+    action: l.action,
+    timestamp: new Date(Number(l.timestamp) * 1000).toLocaleString()
+  }));
 }
 
 module.exports = { writeLog, getLogs };
