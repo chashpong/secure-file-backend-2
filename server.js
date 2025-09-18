@@ -17,7 +17,9 @@ const downloadRoute = require('./routes/download');
 const filesRoute = require('./routes/files');
 const logsRoute = require('./routes/logs');
 const authRoute = require('./routes/auth');
+const folderRoutes = require("./routes/folder");
 app.use('/api/auth', authRoute);  // ✅ สำหรับ register/login
+app.use("/api/folders", folderRoutes);
 app.use('/api/upload', uploadRoute);
 app.use('/api/download', downloadRoute);
 app.use('/api/logs', logsRoute);

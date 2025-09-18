@@ -7,24 +7,42 @@ const router = express.Router();
 
 // ✅ เข้าระบบ (Login)
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // 🔍 หาผู้ใช้จาก email
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+    // 🔍 หาผู้ใช้จาก email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+    }
+
+    // 🔐 ตรวจรหัสผ่าน
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
+    }
+
+    // ✅ สร้าง token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // ✅ ส่งข้อมูลกลับพร้อม user
+    res.json({
+      message: 'เข้าสู่ระบบสำเร็จ',
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+      }
+    });
+  } catch (err) {
+    console.error('❌ Login error:', err);
+    res.status(500).json({ error: 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์' });
   }
-
-  // 🔐 ตรวจรหัสผ่าน
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
-  }
-
-  // ✅ สร้าง token
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-  res.json({ message: 'เข้าสู่ระบบสำเร็จ', token });
 });
 
 // ✅ ลงทะเบียน (Register)
