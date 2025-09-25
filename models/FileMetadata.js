@@ -17,10 +17,10 @@ const FileMetadataSchema = new mongoose.Schema({
   // วันที่อัปโหลด
   uploadedAt:   { type: Date, default: Date.now },
 
-  // โฟลเดอร์ที่ผู้ใช้เลือก (เก็บเป็นชื่อโฟลเดอร์)
-  folder:       { type: String, default: 'General', index: true },
+  // ✅ เปลี่ยนจาก String → ObjectId (อ้างอิง Folder)
+  folder:       { type: mongoose.Schema.Types.ObjectId, ref: 'Folder', required: true, index: true },
 
-  // ผูกไฟล์กับผู้ใช้ (ต้องมีโมเดล User อยู่แล้ว)
+  // ผูกไฟล์กับผู้ใช้
   user:         { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true }
 }, { versionKey: false });
 

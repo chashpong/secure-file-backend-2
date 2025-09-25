@@ -1,17 +1,12 @@
-// routes/folder.js
 const express = require("express");
 const router = express.Router();
 const Folder = require("../models/Folder.js");
+const auth = require("../middleware/auth"); // ✅ ใช้ middleware ตรวจสอบ token
 
-// ✅ GET: ดึงโฟลเดอร์ของ user เท่านั้น
-router.get("/", async (req, res) => {
+// ✅ GET: ดึงโฟลเดอร์ของ user ที่ login อยู่
+router.get("/", auth, async (req, res) => {
   try {
-    const { userId } = req.query;
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
-    }
-
-    const folders = await Folder.find({ user: userId }).sort({ createdAt: -1 });
+    const folders = await Folder.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.json(folders);
   } catch (err) {
     console.error("❌ Error fetching folders:", err);
@@ -19,21 +14,17 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ POST: เพิ่มโฟลเดอร์ใหม่ (ผูกกับ user)
-router.post("/", async (req, res) => {
+// ✅ POST: เพิ่มโฟลเดอร์ใหม่ (ผูกกับ user จาก token)
+router.post("/", auth, async (req, res) => {
   try {
-    const { name, userId } = req.body;
+    const { name } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ error: "Folder name is required" });
-    }
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
     }
 
     const newFolder = new Folder({
       name: name.trim(),
-      user: userId,             // ✅ ผูกกับ user
-      createdAt: new Date(),
+      user: req.user._id,   // ✅ ผูกกับ user จาก token
     });
 
     await newFolder.save();
@@ -45,16 +36,11 @@ router.post("/", async (req, res) => {
 });
 
 // ✅ DELETE: ลบโฟลเดอร์ของ user เท่านั้น
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId } = req.query;
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
-    }
 
-    const deleted = await Folder.findOneAndDelete({ _id: id, user: userId });
-
+    const deleted = await Folder.findOneAndDelete({ _id: id, user: req.user._id });
     if (!deleted) {
       return res.status(404).json({ error: "Folder not found or not owned by this user" });
     }
