@@ -81,9 +81,9 @@ router.post('/', upload.single('cipher'), async (req, res) => {
       user: userId
     });
 
-    // ✅ log ลง Blockchain (best-effort)
+     // ✅ log ลง Blockchain (best-effort)
     try {
-      await writeLog(file.filename, 'UPLOAD');
+      await writeLog(userId, file.filename, 'UPLOAD'); // 👈 ส่ง userId ด้วย
     } catch (e) {
       console.warn('⚠️ Blockchain log skipped:', e.message);
     }

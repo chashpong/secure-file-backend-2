@@ -38,8 +38,11 @@ router.get('/:filename', auth, async (req, res) => {
 
     res.on('finish', async () => {
       try {
-        await writeLog(encryptedFilename, 'DOWNLOAD');
-      } catch (_) {}
+        // ✅ ส่ง userId ไป log ด้วย
+        await writeLog(String(req.user._id), encryptedFilename, 'DOWNLOAD');
+      } catch (e) {
+        console.warn('⚠️ Blockchain log skipped:', e.message);
+      }
     });
   } catch (err) {
     console.error('❌ Download Error:', err);
