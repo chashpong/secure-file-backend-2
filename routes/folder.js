@@ -24,12 +24,17 @@ router.post("/", auth, async (req, res) => {
 
     const newFolder = new Folder({
       name: name.trim(),
-      user: req.user._id,   // ✅ ผูกกับ user จาก token
+      user: req.user._id, // ✅ ผูกกับ user จาก token
     });
 
     await newFolder.save();
     res.json({ message: "✅ Folder created successfully!", folder: newFolder });
   } catch (err) {
+    // ✅ จัดการกรณีซ้ำชื่อใน user เดียวกัน
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "Folder name already exists for this user" });
+    }
+
     console.error("❌ Error creating folder:", err);
     res.status(500).json({ error: "Failed to create folder" });
   }
